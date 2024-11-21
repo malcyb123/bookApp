@@ -8,7 +8,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Session } from '@supabase/supabase-js';
 
-// Screens for Drawer Navigation
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
 function HomeScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -17,13 +19,35 @@ function HomeScreen() {
   );
 }
 
-function AccountScreen({ session }: { session: Session }) {
-  return <Account session={session} />;
-}
+const AccountStack = ({ session }: { session: Session }) => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="AccountMain"
+      children={() => <Account session={session} />} 
+      options={({ navigation }) => ({
+        title: 'Account',
+        headerRight: () => (
+          <Text
+            style={{ marginRight: 10, color: 'blue' }}
+            onPress={() => navigation.goBack()}
+          >
+            ✖ Close
+          </Text>
+        ),
+      })}
+    />
+  </Stack.Navigator>
+);
 
-// Stack and Drawer Navigators
-const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
+const AppDrawer = ({ session }: { session: Session }) => (
+  <Drawer.Navigator>
+    <Drawer.Screen name="Home" component={HomeScreen} />
+    <Drawer.Screen
+      name="Account"
+      children={() => <AccountStack session={session!} />}
+    />
+  </Drawer.Navigator>
+);
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -44,20 +68,9 @@ export default function App() {
     </Stack.Navigator>
   );
 
-  const AppDrawer = () => (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen
-        name="Account"
-        children={() => <AccountScreen session={session!} />}
-        options={{ headerShown: false }}
-      />
-    </Drawer.Navigator>
-  );
-
   return (
     <NavigationContainer>
-      {session && session.user ? <AppDrawer /> : <AuthStack />}
+      {session && session.user ? <AppDrawer session={session} /> : <AuthStack />}
     </NavigationContainer>
   );
 }
