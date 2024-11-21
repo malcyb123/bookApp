@@ -10,17 +10,12 @@ import { Session } from "@supabase/supabase-js";
 
 import { Ionicons} from "@expo/vector-icons";
 import BookTrack from "./components/BookTrack/BookTrack";
+import HomeScreen from "./components/Home/HomeScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function HomeScreen({ navigation }: { navigation: any }) {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
+
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
